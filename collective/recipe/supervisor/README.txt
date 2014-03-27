@@ -18,7 +18,16 @@ sections
     Defaults to ``http ctl rpc``
 
 plugins
-    Extra eggs you want the recipe to install, e.g. ``superlance``
+    Extra eggs you want the recipe to install, e.g. ``superlance``,
+    note, these are installed on their own and do not get included in any script
+
+d_plugins
+    Extra eggs you want the recipe to install, added as dependency to the
+    ``supervisord`` script
+
+ctl_plugins
+    Extra eggs you want the recipe to install, added as dependency to the
+    ``supervisorctl`` script, e.g. ``supervisor-quick``
 
 http-socket
     ``inet`` or ``unix`` socket to use for HTTP administration. Defaults to ``inet``.
@@ -188,6 +197,8 @@ We'll start by creating a buildout that uses the recipe::
     ... recipe = collective.recipe.supervisor
     ... plugins =
     ...       superlance
+    ... d_plugins = supervisor-quick
+    ... ctl_plugins = supervisor-quick
     ... port = 9001
     ... user = mustapha
     ... password = secret
@@ -212,6 +223,7 @@ We'll start by creating a buildout that uses the recipe::
     ... supervisor = 3.0b1
     ... meld3 = 0.6.9
     ... zc.recipe.egg = 1.3.2
+    ... supervisor-quick = 0.1.0
     ... """)
 
 Chris McDonough said::
@@ -373,7 +385,7 @@ configuration file is given as argument with the ``-c`` option::
     >>> cat('bin', 'supervisord')
     #!...
     <BLANKLINE>
-    ...
+    ...supervisor_quick...
     <BLANKLINE>
     import sys; sys.argv.extend(["-c","/sample-buildout/parts/supervisor/supervisord.conf"])
     <BLANKLINE>
@@ -388,7 +400,7 @@ username. This allows to run it as is::
     >>> cat('bin', 'supervisorctl')
     #!...
     <BLANKLINE>
-    ...
+    ...supervisor_quick...
     <BLANKLINE>
     import sys; sys.argv[1:1] = ["-c","/sample-buildout/parts/supervisor/supervisord.conf"]
     <BLANKLINE>

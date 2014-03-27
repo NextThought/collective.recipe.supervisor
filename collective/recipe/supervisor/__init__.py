@@ -232,12 +232,17 @@ class Recipe(object):
     def _install_scripts(self):
         conf_file = self.options.get('supervisord-conf')
 
+        plugins = self.options.get('d_plugins', '')
+        if plugins:
+            plugins = '\n' + plugins
+        eggs = 'supervisor' + plugins
+
         init_stmt = 'import sys; sys.argv.extend(["-c","%s"])' % \
             (conf_file,)
         dscript = zc.recipe.egg.Egg(
             self.buildout,
             self.name,
-            {'eggs': 'supervisor',
+            {'eggs': eggs,
              'scripts': 'supervisord=%sd' % self.name,
              'initialization': init_stmt,
              })
@@ -249,12 +254,17 @@ class Recipe(object):
              'scripts': 'memmon=memmon',
              })
 
+        plugins = self.options.get('ctl_plugins', '')
+        if plugins:
+            plugins = '\n' + plugins
+        eggs = 'supervisor' + plugins
+
         init_stmt = 'import sys; sys.argv[1:1] = ["-c","%s"]' % \
             (conf_file,)
         ctlscript = zc.recipe.egg.Egg(
             self.buildout,
             self.name,
-            {'eggs': 'supervisor',
+            {'eggs': eggs,
              'scripts': 'supervisorctl=%sctl' % self.name,
              'initialization': init_stmt,
              'arguments': 'sys.argv[1:]',
