@@ -217,6 +217,7 @@ We'll start by creating a buildout that uses the recipe::
     ... groups =
     ...       10 services zeo,instance1
     ...       20 others other,other2,other3
+    ... include = ${buildout:directory}/data/our-include.conf
     ...
     ... [versions]
     ... superlance = 0.6
@@ -377,6 +378,9 @@ Now, have a look at the generated ``supervisord.conf`` file::
     [group:others]
     programs = other,other2,other3
     priority = 20
+    <BLANKLINE>
+    [include]
+    files = /sample-buildout/data/our-include.conf
 
 
 and if we look at generated supervisord script we will see that the
