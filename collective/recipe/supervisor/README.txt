@@ -352,7 +352,7 @@ Now, have a look at the generated ``supervisord.conf`` file::
     environment=SUPERVISOR_USERNAME='mustapha',SUPERVISOR_PASSWORD='secret',SUPERVISOR_SERVER_URL='http://supervisor.mustap.com'
     <BLANKLINE>
     [eventlistener:HttpOk]
-    command = /sample-buildout/bin/httpok -p site1 -t 20 http://localhost:8080/
+    command = /sample-buildout/bin/httpok -p instance1 -t 20 http://localhost:8080/
     events = TICK_60
     process_name=HttpOk
     environment=SUPERVISOR_USERNAME='mustapha',SUPERVISOR_PASSWORD='secret',SUPERVISOR_SERVER_URL='http://supervisor.mustap.com'
