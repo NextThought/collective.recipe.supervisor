@@ -29,6 +29,18 @@ ctl_plugins
     Extra eggs you want the recipe to install, added as dependency to the
     ``supervisorctl`` script, e.g. ``supervisor-quick``
 
+rpcplugins
+    A list of RPC plugins that run in supervisor, one per line. The
+    format of a line is as follows:
+
+        name factory
+
+ctlplugins
+    A list of supervisorctl plugins, one per line. The format of a
+    line is as follows:
+
+        name factory
+
 http-socket
     ``inet`` or ``unix`` socket to use for HTTP administration. Defaults to ``inet``.
 
@@ -197,8 +209,13 @@ We'll start by creating a buildout that uses the recipe::
     ... recipe = collective.recipe.supervisor
     ... plugins =
     ...       superlance
-    ... d_plugins = supervisor-quick
-    ... ctl_plugins = supervisor-quick
+    ...       mr.laforge
+    ... d_plugins =
+    ...       supervisor-quick
+    ...       mr.laforge
+    ... ctl_plugins =
+    ...       supervisor-quick
+    ...       mr.laforge
     ... port = 9001
     ... user = mustapha
     ... password = secret
@@ -218,13 +235,16 @@ We'll start by creating a buildout that uses the recipe::
     ...       10 services zeo,instance1
     ...       20 others other,other2,other3
     ... include = ${buildout:directory}/data/our-include.conf
+    ... rpcplugins = laforge mr.laforge.rpcinterface:make_laforge_rpcinterface
+    ... ctlplugins = laforge mr.laforge.controllerplugin:make_laforge_controllerplugin
     ...
     ... [versions]
     ... superlance = 0.6
     ... supervisor = 3.0b1
     ... meld3 = 0.6.9
     ... zc.recipe.egg = 1.3.2
-    ... supervisor-quick = 0.1.0
+    ... supervisor-quick = 0.1.1
+    ... mr.laforge = 0.6
     ... """)
 
 Chris McDonough said::
@@ -240,11 +260,10 @@ Chris McDonough said::
 Running the buildout gives us::
 
     >>> print system(buildout)
-    Getting distribution for ...
-    ...
     Installing supervisor.
     ...
     Generated script '/sample-buildout/bin/supervisorctl'...
+    ...
 
 Check that we have the ``crashmail``, ``memmon`` and ``httpok`` scripts from superlance::
 
@@ -258,7 +277,9 @@ Check that we have the ``crashmail``, ``memmon`` and ``httpok`` scripts from sup
     -  memmon
     -  supervisorctl
     -  supervisord
-
+    -  supervisordown
+    -  supervisorup
+    -  waitforports
 
 You can now just run the ``supervisord`` script like this::
 
@@ -298,8 +319,14 @@ Now, have a look at the generated ``supervisord.conf`` file::
     username = mustapha
     password = secret
     <BLANKLINE>
+    [ctlplugin:laforge]
+    supervisor.ctl_factory = mr.laforge.controllerplugin:make_laforge_controllerplugin
+    <BLANKLINE>
     [rpcinterface:supervisor]
     supervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface
+    <BLANKLINE>
+    [rpcinterface:laforge]
+    supervisor.rpcinterface_factory=mr.laforge.rpcinterface:make_laforge_rpcinterface
     <BLANKLINE>
     [program:zeo]
     command = /a/b/c/bin/runzeo

@@ -102,9 +102,31 @@ class Recipe(object):
         if 'ctl' in sections:
             config_data += CTL_TEMPLATE % locals()
 
+            ctlplugins = [c for c in self.options.get('ctlplugins', '').splitlines() if c]
+            pattern = re.compile("(?P<name>[^\s]+)"
+                                 "\s+"
+                                 "(?P<callable>[^\s]+)")
+            for ctlplugin in ctlplugins:
+                match = pattern.match(ctlplugin)
+                if not match:
+                    raise ValueError("CTL plugins line incorrect: %s" % ctlplugin)
+
+                config_data += CTLPLUGIN_TEMPLATE % match.groupdict()
+
         # rpc
         if 'rpc' in sections:
             config_data += RPC_TEMPLATE % locals()
+
+            rpcplugins = [r for r in self.options.get('rpcplugins', '').splitlines() if r]
+            pattern = re.compile("(?P<name>[^\s]+)"
+                                 "\s+"
+                                 "(?P<callable>[^\s]+)")
+            for rpcplugin in rpcplugins:
+                match = pattern.match(rpcplugin)
+                if not match:
+                    raise ValueError("RPC plugins line incorrect: %s" % rpcplugin)
+
+                config_data += RPC_EXTRA_TEMPLATE % match.groupdict()
 
         # programs
         programs = [
@@ -338,6 +360,16 @@ chmod = %(chmod)s
 RPC_TEMPLATE = """
 [rpcinterface:supervisor]
 supervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface
+"""
+
+RPC_EXTRA_TEMPLATE = """
+[rpcinterface:%(name)s]
+supervisor.rpcinterface_factory=%(callable)s
+"""
+
+CTLPLUGIN_TEMPLATE = """
+[ctlplugin:%(name)s]
+supervisor.ctl_factory = %(callable)s
 """
 
 PROGRAM_TEMPLATE = """
