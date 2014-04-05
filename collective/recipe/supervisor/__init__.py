@@ -45,6 +45,8 @@ class Recipe(object):
         http_socket = self.options.get('http-socket', 'inet')
         logfile_maxbytes = self.options.get('logfile-maxbytes', '50MB')
         logfile_backups = self.options.get('logfile-backups', '10')
+        childstdout_maxbytes = self.options.get('childstdout-logfile-maxbytes', None)
+        childstderr_maxbytes = self.options.get('childstderr-logfile-maxbytes', None)
         loglevel = self.options.get('loglevel', 'info')
         umask = self.options.get('umask', '022')
         nodaemon = self.options.get('nodaemon', 'false')
@@ -151,6 +153,7 @@ class Recipe(object):
             program_user = parts.get('user')
             process_options = parts.get('processopts')
             extras = []
+            extra_keys = []
 
             if program_user:
                 extras.append('user = %s' % program_user)
@@ -161,6 +164,11 @@ class Recipe(object):
                     (key, value) = part.split('=', 1)
                     if key and value:
                         extras.append("%s = %s" % (key, value))
+                        extra_keys.append(key)
+            for key, value in (('stdout_logfile_maxbytes', childstdout_maxbytes),
+                               ('stderr_logfile_maxbytes', childstderr_maxbytes)):
+                if value and key not in extra_keys:
+                    extras.append( "%s = %s" % (key, value))
 
             config_data += PROGRAM_TEMPLATE % \
                            dict(program=parts.get('processname'),

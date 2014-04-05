@@ -1,6 +1,10 @@
 0.20 (unreleased)
 =================
 
+- Add a global way to set default values for
+  ``stdout_logfile_maxbytes`` and ``stderr_logfile_maxbytes``.
+  [jmadden]
+
 - Support RPC and CTL plugins.
   [moriyoushi]
 

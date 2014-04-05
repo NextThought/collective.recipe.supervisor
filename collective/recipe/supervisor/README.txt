@@ -103,6 +103,18 @@ logfile-maxbytes
     The maximum number of bytes that may be consumed by the activity log file
     before it is rotated. Defaults to 50MB.
 
+childstdout-logfile-maxbytes
+    The maximum number of bytes that may be consumed by the stdout log file
+    of a child process before it is rotated. Defaults to 50 MB and may
+    be set on a per program basis in the ``process_opts`` value by
+    giving a value for ``stdout_logfile_maxbytes``.
+
+childstderr-logfile-maxbytes
+    The maximum number of bytes that may be consumed by the stderr log file
+    of a child process before it is rotated. Defaults to 50 MB and may
+    be set on a per program basis in the ``process_opts`` value by
+    giving a value for ``stderr_logfile_maxbytes``.
+
 logfile-backups
     The number of backups to keep around resulting from activity log file
     rotation. Defaults to 10.
@@ -227,7 +239,7 @@ We'll start by creating a buildout that uses the recipe::
     ...       40 maildrophost ${buildout:bin-directory}/maildropctl true
     ...       50 other ${buildout:bin-directory}/other [-n 100] /tmp
     ...       60 other2 ${buildout:bin-directory}/other2 [-n 100] true
-    ...       70 other3 (startsecs=10) ${buildout:bin-directory}/other3 [-n -h -v --no-detach] /tmp3 true www-data
+    ...       70 other3 (startsecs=10 stderr_logfile_maxbytes=100) ${buildout:bin-directory}/other3 [-n -h -v --no-detach] /tmp3 true www-data
     ... eventlisteners =
     ...       Memmon TICK_60 ${buildout:bin-directory}/memmon [-p instance1=200MB]
     ...       HttpOk (startsecs=20) TICK_60 ${buildout:bin-directory}/httpok [-p instance1 -t 20 http://localhost:8080/]
@@ -237,6 +249,8 @@ We'll start by creating a buildout that uses the recipe::
     ... include = ${buildout:directory}/data/our-include.conf
     ... rpcplugins = laforge mr.laforge.rpcinterface:make_laforge_rpcinterface
     ... ctlplugins = laforge mr.laforge.controllerplugin:make_laforge_controllerplugin
+    ... childstdout-logfile-maxbytes = 0
+    ... childstderr-logfile-maxbytes = 0
     ...
     ... [versions]
     ... superlance = 0.6
@@ -334,6 +348,8 @@ Now, have a look at the generated ``supervisord.conf`` file::
     directory = /a/b/c
     priority = 10
     redirect_stderr = false
+    stdout_logfile_maxbytes = 0
+    stderr_logfile_maxbytes = 0
     <BLANKLINE>
     <BLANKLINE>
     [program:instance1]
@@ -342,6 +358,8 @@ Now, have a look at the generated ``supervisord.conf`` file::
     directory = /e/f
     priority = 20
     redirect_stderr = true
+    stdout_logfile_maxbytes = 0
+    stderr_logfile_maxbytes = 0
     <BLANKLINE>
     <BLANKLINE>
     [program:instance2]
@@ -351,6 +369,8 @@ Now, have a look at the generated ``supervisord.conf`` file::
     priority = 30
     redirect_stderr = true
     autostart = false
+    stdout_logfile_maxbytes = 0
+    stderr_logfile_maxbytes = 0
     <BLANKLINE>
     [program:maildrophost]
     command = /sample-buildout/bin/maildropctl
@@ -358,6 +378,8 @@ Now, have a look at the generated ``supervisord.conf`` file::
     directory = /sample-buildout/bin
     priority = 40
     redirect_stderr = true
+    stdout_logfile_maxbytes = 0
+    stderr_logfile_maxbytes = 0
     <BLANKLINE>
     <BLANKLINE>
     [program:other]
@@ -366,6 +388,8 @@ Now, have a look at the generated ``supervisord.conf`` file::
     directory = /tmp
     priority = 50
     redirect_stderr = false
+    stdout_logfile_maxbytes = 0
+    stderr_logfile_maxbytes = 0
     <BLANKLINE>
     <BLANKLINE>
     [program:other2]
@@ -374,6 +398,8 @@ Now, have a look at the generated ``supervisord.conf`` file::
     directory = /sample-buildout/bin
     priority = 60
     redirect_stderr = true
+    stdout_logfile_maxbytes = 0
+    stderr_logfile_maxbytes = 0
     <BLANKLINE>
     <BLANKLINE>
     [program:other3]
@@ -384,6 +410,8 @@ Now, have a look at the generated ``supervisord.conf`` file::
     redirect_stderr = true
     user = www-data
     startsecs = 10
+    stderr_logfile_maxbytes = 100
+    stdout_logfile_maxbytes = 0
     <BLANKLINE>
     [eventlistener:Memmon]
     command = /sample-buildout/bin/memmon -p instance1=200MB
