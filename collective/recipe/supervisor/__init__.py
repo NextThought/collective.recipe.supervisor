@@ -105,9 +105,9 @@ class Recipe(object):
             config_data += CTL_TEMPLATE % locals()
 
             ctlplugins = [c for c in self.options.get('ctlplugins', '').splitlines() if c]
-            pattern = re.compile("(?P<name>[^\s]+)"
-                                 "\s+"
-                                 "(?P<callable>[^\s]+)")
+            pattern = re.compile(r"(?P<name>[^\s]+)"
+                                 r"\s+"
+                                 r"(?P<callable>[^\s]+)")
             for ctlplugin in ctlplugins:
                 match = pattern.match(ctlplugin)
                 if not match:
@@ -120,9 +120,9 @@ class Recipe(object):
             config_data += RPC_TEMPLATE % locals()
 
             rpcplugins = [r for r in self.options.get('rpcplugins', '').splitlines() if r]
-            pattern = re.compile("(?P<name>[^\s]+)"
-                                 "\s+"
-                                 "(?P<callable>[^\s]+)")
+            pattern = re.compile(r"(?P<name>[^\s]+)"
+                                 r"\s+"
+                                 r"(?P<callable>[^\s]+)")
             for rpcplugin in rpcplugins:
                 match = pattern.match(rpcplugin)
                 if not match:
@@ -133,16 +133,16 @@ class Recipe(object):
         # programs
         programs = [
             p for p in self.options.get('programs', '').splitlines() if p]
-        pattern = re.compile("(?P<priority>\d+)"
-                             "\s+"
-                             "(?P<processname>[^\s]+)"
-                             "(\s+\((?P<processopts>([^\)]+))\))?"
-                             "\s+"
-                             "(?P<command>[^\s]+)"
-                             "(\s+\[(?P<args>(?!true|false)[^\]]+)\])?"
-                             "(\s+(?P<directory>(?!true|false)[^\s]+))?"
-                             "(\s+(?P<redirect>(true|false)))?"
-                             "(\s+(?P<user>[^\s]+))?")
+        pattern = re.compile(r"(?P<priority>\d+)"
+                             r"\s+"
+                             r"(?P<processname>[^\s]+)"
+                             r"(\s+\((?P<processopts>([^\)]+))\))?"
+                             r"\s+"
+                             r"(?P<command>[^\s]+)"
+                             r"(\s+\[(?P<args>(?!true|false)[^\]]+)\])?"
+                             r"(\s+(?P<directory>(?!true|false)[^\s]+))?"
+                             r"(\s+(?P<redirect>(true|false)))?"
+                             r"(\s+(?P<user>[^\s]+))?")
 
         for program in programs:
             match = pattern.match(program)
@@ -185,13 +185,13 @@ class Recipe(object):
         eventlisteners = [
             e for e in self.options.get('eventlisteners', '').splitlines() if e]
 
-        pattern = re.compile("(?P<processname>[^\s]+)"
-                             "(\s+\((?P<processopts>([^\)]+))\))?"
-                             "\s+"
-                             "(?P<events>[^\s]+)"
-                             "\s+"
-                             "(?P<command>[^\s]+)"
-                             "(\s+\[(?P<args>[^\]]+)\])?")
+        pattern = re.compile(r"(?P<processname>[^\s]+)"
+                             r"(\s+\((?P<processopts>([^\)]+))\))?"
+                             r"\s+"
+                             r"(?P<events>[^\s]+)"
+                             r"\s+"
+                             r"(?P<command>[^\s]+)"
+                             r"(\s+\[(?P<args>[^\]]+)\])?")
 
         for eventlistener in eventlisteners:
             match = pattern.match(eventlistener)
@@ -225,11 +225,11 @@ class Recipe(object):
         # groups
         groups = [g for g in self.options.get('groups', '').splitlines() if g]
 
-        pattern = re.compile("(?P<priority>\d+)"
-                             "\s+"
-                             "(?P<group>[^\s]+)"
-                             "\s+"
-                             "(?P<programs>[^\s]+)")
+        pattern = re.compile(r"(?P<priority>\d+)"
+                             r"\s+"
+                             r"(?P<group>[^\s]+)"
+                             r"\s+"
+                             r"(?P<programs>[^\s]+)")
 
         for group in groups:
             match = pattern.match(group)
@@ -255,7 +255,8 @@ class Recipe(object):
         if not os.path.exists(os.path.dirname(conf_file)):
             os.makedirs(os.path.dirname(conf_file))
 
-        open(conf_file, 'w').write(config_data)
+        with open(conf_file, 'w') as f:
+			f.write(config_data)
 
         return self._install_scripts()
 
