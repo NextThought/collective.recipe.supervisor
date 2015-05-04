@@ -12,7 +12,7 @@ def read(*rnames):
     with codecs.open(os.path.join(os.path.dirname(__file__), *rnames), 'rU', encoding='utf-8') as f:
         return f.read()
 
-version = '0.20dev'
+version = '0.20.dev0'
 
 long_description = (
     read('docs', 'README.txt')
